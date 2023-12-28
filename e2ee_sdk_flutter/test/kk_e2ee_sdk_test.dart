@@ -70,39 +70,39 @@ void main() {
     }
   }
 
-  test('generateRandomBytes(+)', () async {
-    expect(await E2eeSdk().generateRandomBytes(32), isNotEmpty);
+  test('generateRandomBytes(+)', () {
+    expect(E2eeSdk().generateRandomBytes(32), isNotEmpty);
   });
 
-  test('generateRandomBytes(-)', () async {
-    expect(() async => await E2eeSdk().generateRandomBytes(-1),
+  test('generateRandomBytes(-)', () {
+    expect(() async => E2eeSdk().generateRandomBytes(-1),
         throwsA(isA<KKException>()));
   });
 
-  test('generateRandomBytesLoadTest', () async {
+  test('generateRandomBytesLoadTest', () {
     for (var i = 0; i < 1000000; i++) {
-      final Uint8List randomBytes = await E2eeSdk().generateRandomBytes(32);
+      final Uint8List randomBytes = E2eeSdk().generateRandomBytes(32);
     }
     print("1000000 records done");
   });
 
-  test('generateRandomString(+)', () async {
-    expect(await E2eeSdk().generateRandomString(32), isNotEmpty);
+  test('generateRandomString(+)', () {
+    expect(E2eeSdk().generateRandomString(32), isNotEmpty);
   });
 
-  test('generateRandomString(-)', () async {
-    expect(() async => await E2eeSdk().generateRandomString(-1),
+  test('generateRandomString(-)', () {
+    expect(() async => E2eeSdk().generateRandomString(-1),
         throwsA(isA<KKException>()));
   });
 
-  test('generateRandomStringLoadTest', () async {
+  test('generateRandomStringLoadTest', () {
     for (var i = 0; i < 1000000; i++) {
-      final String randomString = await E2eeSdk().generateRandomString(32);
+      final String randomString = E2eeSdk().generateRandomString(32);
     }
     print("1000000 records done");
   });
 
-  test('encryptRSA(+)', () async {
+  test('encryptRSA(+)', () {
     const String rsaPublicKeyPem = '''
     -----BEGIN PUBLIC KEY-----
     MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA08717ObQ9Plw3XAR80ad
@@ -119,14 +119,14 @@ void main() {
 
     const String oaepLabel = "FzDkpJ0mWWjJjeodoCWYGP/pEUMib0aPvS/Qt";
     const String plaintext = "plaintext";
-    final Uint8List ciphertext = await E2eeSdk().encryptRSA(
+    final Uint8List ciphertext = E2eeSdk().encryptRSA(
         rsaPublicKeyPem,
         Uint8List.fromList(utf8.encode(plaintext)),
         Uint8List.fromList(utf8.encode(oaepLabel)));
     expect(ciphertext, isNotEmpty);
   });
 
-  test('encryptRSA(-)', () async {
+  test('encryptRSA(-)', () {
     const String rsaPublicKeyPem = '''
     -----BEGIN PUBLIC KEY-----
     yAeyWowKSd7We+CoD3SHh/CFj/+JLZ9oecOrjlG5KitpassDkSsNDYvXLP1I6xBU
@@ -138,14 +138,14 @@ void main() {
     const String oaepLabel = "FzDkpJ0mWWjJjeodoCWYGP/pEUMib0aPvS/Qt";
     const String plaintext = "plaintext";
     expect(
-        () async => await E2eeSdk().encryptRSA(
+        () async => E2eeSdk().encryptRSA(
             rsaPublicKeyPem,
             Uint8List.fromList(utf8.encode(plaintext)),
             Uint8List.fromList(utf8.encode(oaepLabel))),
         throwsA(isA<KKException>()));
   });
 
-  test('encryptRSALoadTest', () async {
+  test('encryptRSALoadTest', () {
     const String rsaPublicKeyPem = '''
     -----BEGIN PUBLIC KEY-----
     MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA08717ObQ9Plw3XAR80ad
@@ -163,7 +163,7 @@ void main() {
     const String oaepLabel = "FzDkpJ0mWWjJjeodoCWYGP/pEUMib0aPvS/Qt";
     for (var i = 0; i < 1000000; i++) {
       final String plaintext = "plaintext$i";
-      final Uint8List ciphertext = await E2eeSdk().encryptRSA(
+      final Uint8List ciphertext = E2eeSdk().encryptRSA(
           rsaPublicKeyPem,
           Uint8List.fromList(utf8.encode(plaintext)),
           Uint8List.fromList(utf8.encode(oaepLabel)));
@@ -171,7 +171,7 @@ void main() {
     print("1000000 records done");
   });
 
-  test('getRSAPublicKeyPemFromCertificate(+)', () async {
+  test('getRSAPublicKeyPemFromCertificate(+)', () {
     const String certificatePem = '''
       -----BEGIN CERTIFICATE-----
       MIIEKzCCAxOgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBpDELMAkGA1UEBhMCSUQx
@@ -200,10 +200,10 @@ void main() {
       -----END CERTIFICATE-----
       ''';
     final publicKeyPem =
-        await E2eeSdk().getRSAPublicKeyPemFromCertificate(certificatePem);
+        E2eeSdk().getRSAPublicKeyPemFromCertificate(certificatePem);
   });
 
-  test('getRSAPublicKeyPemFromCertificate(-)', () async {
+  test('getRSAPublicKeyPemFromCertificate(-)', () {
     const String certificatePem = '''
       -----BEGIN CERTIFICATE-----
       MIIEKzCCAxOgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBpDELMAkGA1UEBhMCSUQx
@@ -219,12 +219,11 @@ void main() {
       -----END CERTIFICATE-----
       ''';
     expect(
-        () async =>
-            await E2eeSdk().getRSAPublicKeyPemFromCertificate(certificatePem),
+        () async => E2eeSdk().getRSAPublicKeyPemFromCertificate(certificatePem),
         throwsA(isA<KKException>()));
   });
 
-  test('getRSAPublicKeyPemFromCertificateLoadTest', () async {
+  test('getRSAPublicKeyPemFromCertificateLoadTest', () {
     const String certificatePem = '''
       -----BEGIN CERTIFICATE-----
       MIIEKzCCAxOgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBpDELMAkGA1UEBhMCSUQx
@@ -254,12 +253,12 @@ void main() {
       ''';
     for (var i = 0; i < 1000000; i++) {
       final publicKeyPem =
-          await E2eeSdk().getRSAPublicKeyPemFromCertificate(certificatePem);
+          E2eeSdk().getRSAPublicKeyPemFromCertificate(certificatePem);
     }
     print("1000000 records done");
   });
 
-  test('verifyCertificateSignature(+)', () async {
+  test('verifyCertificateSignature(+)', () {
     const String certificateChain = '''
       -----BEGIN CERTIFICATE-----
       MIIFWjCCA0KgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBozELMAkGA1UEBhMCSUQx
@@ -328,12 +327,11 @@ void main() {
       jjTxuAcrj/vKBO0lE6fF1h2vuC+Kd15v5M/kWs/H3sK6OIwCOCZrHUeY0M6lkDI=
       -----END CERTIFICATE-----
       ''';
-    final isVerified =
-        await E2eeSdk().verifyCertificateSignature(certificateChain);
+    final isVerified = E2eeSdk().verifyCertificateSignature(certificateChain);
     expect(isVerified, true);
   });
 
-  test('verifyCertificateSignatureLoadTest(-)', () async {
+  test('verifyCertificateSignatureLoadTest(-)', () {
     const String certificateChain = '''
       -----BEGIN CERTIFICATE-----
       MIIFWjCCA0KgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBozELMAkGA1UEBhMCSUQx
@@ -385,13 +383,11 @@ void main() {
       jjTxuAcrj/vKBO0lE6fF1h2vuC+Kd15v5M/kWs/H3sK6OIwCOCZrHUeY0M6lkDI=
       -----END CERTIFICATE-----
       ''';
-    expect(
-        () async =>
-            await E2eeSdk().verifyCertificateSignature(certificateChain),
+    expect(() async => E2eeSdk().verifyCertificateSignature(certificateChain),
         throwsA(isA<KKException>()));
   });
 
-  test('verifyCertificateSignatureLoadTest', () async {
+  test('verifyCertificateSignatureLoadTest', () {
     const String certificateChain = '''
       -----BEGIN CERTIFICATE-----
       MIIFWjCCA0KgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBozELMAkGA1UEBhMCSUQx
@@ -461,13 +457,12 @@ void main() {
       -----END CERTIFICATE-----
       ''';
     for (var i = 0; i < 1000000; i++) {
-      final isVerified =
-          await E2eeSdk().verifyCertificateSignature(certificateChain);
+      final isVerified = E2eeSdk().verifyCertificateSignature(certificateChain);
     }
     print("1000000 records done");
   });
 
-  test('verifyRSASignature(+)', () async {
+  test('verifyRSASignature(+)', () {
     const String message = "cx_onaxr`pmnsx`k";
     const String signature =
         "kQ6SbzUGxFigFjJLkYSPmp6/45wZxIVO2kY5ADrhhKCfaeb7NuXT6X6dSUJm+JKUfwq01Ek3S0eT6C+z0efSQZJ5QYzu1uOmjZjBM8LPUL41qTLeR2oYqAMTDVWJqvKLUdb3y109S9WjNqGNvcxcZKztd2Kd9yRGdjW7EwVbMuO89WI2U83aPnBBbUPQvrm0QIdQl4Wc7+0aiMhEuIWSIKaPDM2XWTOCjFdbS2crZ3luSMtiYHY65sMq8f7QzDg9hZWbETM/4w1jV3KQv+GBlJVTzH78R8myGbyWLWh92WR5Kn67DdLXtwG9xgDbYj1uoUphUYqFSC2uEqg7nKwO0Q==";
@@ -484,12 +479,12 @@ void main() {
     -----END PUBLIC KEY-----
     ''';
 
-    final bool isVerified = await E2eeSdk().verifyRSASignature(rsaPublicKeyPem,
+    final bool isVerified = E2eeSdk().verifyRSASignature(rsaPublicKeyPem,
         Uint8List.fromList(utf8.encode(message)), base64Decode(signature));
     expect(isVerified, true);
   });
 
-  test('verifyRSASignature(-)', () async {
+  test('verifyRSASignature(-)', () {
     const String message = "cx_onaxr`pmnsx`k";
     const String signature =
         "kQ6SbzUGxFigFjJLkYSPmp6/45wZxIVO2kY5ADrhhKCfaeb7NuXT6X6dSUJm+JKUfwq01Ek3S0eT6C+z0efSQZJ5QYzu1uOmjZjBM8LPUL41qTLeR2oYqAMTDVWJqvKLUdb3y109S9WjNqGNvcxcZKztd2Kd9yRGdjW7EwVbMuO89WI2U83aPnBBbUPQvrm0QIdQl4Wc7+0aiMhEuIWSIKaPDM2XWTOCjFdbS2crZ3luSMtiYHY65sMq8f7QzDg9hZWbETM/4w1jV3KQv+GBlJVTzH78R8myGbyWLWh92WR5Kn67DdLXtwG9xgDbYj1uoUphUYqFSC2uEqg7nKwO0Q==";
@@ -504,12 +499,12 @@ void main() {
     ''';
 
     expect(
-        () async => await E2eeSdk().verifyRSASignature(rsaPublicKeyPem,
+        () async => E2eeSdk().verifyRSASignature(rsaPublicKeyPem,
             Uint8List.fromList(utf8.encode(message)), base64Decode(signature)),
         throwsA(isA<KKException>()));
   });
 
-  test('verifyRSASignatureLoadTest', () async {
+  test('verifyRSASignatureLoadTest', () {
     const String message = "cx_onaxr`pmnsx`k";
     const String signature =
         "kQ6SbzUGxFigFjJLkYSPmp6/45wZxIVO2kY5ADrhhKCfaeb7NuXT6X6dSUJm+JKUfwq01Ek3S0eT6C+z0efSQZJ5QYzu1uOmjZjBM8LPUL41qTLeR2oYqAMTDVWJqvKLUdb3y109S9WjNqGNvcxcZKztd2Kd9yRGdjW7EwVbMuO89WI2U83aPnBBbUPQvrm0QIdQl4Wc7+0aiMhEuIWSIKaPDM2XWTOCjFdbS2crZ3luSMtiYHY65sMq8f7QzDg9hZWbETM/4w1jV3KQv+GBlJVTzH78R8myGbyWLWh92WR5Kn67DdLXtwG9xgDbYj1uoUphUYqFSC2uEqg7nKwO0Q==";
@@ -527,10 +522,8 @@ void main() {
     ''';
 
     for (var i = 0; i < 1000000; i++) {
-      final bool isVerified = await E2eeSdk().verifyRSASignature(
-          rsaPublicKeyPem,
-          Uint8List.fromList(utf8.encode(message)),
-          base64Decode(signature));
+      final bool isVerified = E2eeSdk().verifyRSASignature(rsaPublicKeyPem,
+          Uint8List.fromList(utf8.encode(message)), base64Decode(signature));
     }
     print("1000000 records done");
   });
@@ -587,8 +580,8 @@ void main() {
     try {
       final responseE2eeEncrypt =
           await E2eeSdk().e2eeEncrypt(requestE2eeEncrypt);
-    } on KKException catch (ex) {
-      print("Error code: ${ex.getErrorCode}");
+    } catch (ex) {
+      print("Error code: ${ex.toString()}");
       // rethrow;
     }
     // expect(() async => await E2eeSdk().e2eeEncrypt(requestE2eeEncrypt),
@@ -629,6 +622,22 @@ void main() {
     print("E2EE encrypt duration with flutter: $duration");
 
     print("1000000 records done");
+  });
+
+  test('calculateDigest(+)', () async {
+    const String plainData = "PasswordHibankTest";
+
+    final Uint8List digestUint8List = E2eeSdk()
+        .calculateDigest(Uint8List.fromList(plainData.codeUnits), "SHA-512");
+    expect(digestUint8List, isNotEmpty);
+  });
+
+  test('calculateDigest(-)', () async {
+    const String plainData = "PasswordHibankTest";
+    expect(
+        () async => E2eeSdk().calculateDigest(
+            Uint8List.fromList(utf8.encode(plainData)), "SHA512"),
+        throwsA(isA<KKException>()));
   });
 
   test('reset and verify', () async {

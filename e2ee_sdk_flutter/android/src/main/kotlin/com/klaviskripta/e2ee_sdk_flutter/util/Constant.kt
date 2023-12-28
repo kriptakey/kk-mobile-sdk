@@ -14,7 +14,7 @@ class Constants {
         const val AUTHENTICATION_TAG_LENGTH : Int = 128
         const val USER_VALIDITY_DURATION : Int = 5 * 60
         const val USER_AUTHENTICATED_DURATION : Int = 2 * 60
-        const val DIGEST_SIGNATURE_ALGORITHM = "NONEwithECDSA"
+        const val NODIGEST_SIGNATURE_ALGORITHM = "NONEwithECDSA"
     }
 }
 

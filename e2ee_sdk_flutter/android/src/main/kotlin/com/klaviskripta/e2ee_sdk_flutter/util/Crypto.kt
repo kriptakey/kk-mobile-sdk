@@ -478,7 +478,7 @@ class Crypto {
     public fun signDigest(keyAlias: String, digest: ByteArray): ByteArray {
         val keyPair: Key? = getKey(keyAlias)
         try {
-            val signer = Signature.getInstance(Constants.DIGEST_SIGNATURE_ALGORITHM)
+            val signer = Signature.getInstance(Constants.NODIGEST_SIGNATURE_ALGORITHM)
             signer.initSign((keyPair as PrivateKey))
             signer.update(digest)
             return signer.sign()

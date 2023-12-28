@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 class ApiClient {
   final Dio _dio = Dio();
 
+  /// Download wrapped client key from backend server.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> getWrappedClientKey(
       Map<String, dynamic>? getWrappedClientKeyPayload) async {
     try {
@@ -21,6 +23,8 @@ class ApiClient {
     }
   }
 
+  /// Authenticate backend server everytime application launched for the first time.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> startServerAuthentication(
       Map<String, dynamic>? serverAuthenticationData) async {
     try {
@@ -39,6 +43,9 @@ class ApiClient {
     }
   }
 
+  /// Call API /preAuthenticate to download server public key, oaep label, and e2ee session id.
+  /// The response's entities are used to encrypt user password or data in mobile side.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> preAuthentication() async {
     try {
       Response response = await _dio.get(
@@ -51,6 +58,8 @@ class ApiClient {
     }
   }
 
+  /// Call API /registerWithPassword to register user for the first time by using user based password.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> registerUserWithPassword(
       Map<String, dynamic>? userData) async {
     // Implement user registration
@@ -71,6 +80,8 @@ class ApiClient {
     }
   }
 
+  /// Call API /updateAccount to update user data and store the encrypted data in database.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> updateUserAccount(
       Map<String, dynamic>? userData) async {
     // Implement user account completion
@@ -91,6 +102,8 @@ class ApiClient {
     }
   }
 
+  /// Call API /loginWithPassword to authenticate user that has been registered previously.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> loginWithPassword(
       Map<String, dynamic>? userData) async {
     // Implement user registration
@@ -111,6 +124,8 @@ class ApiClient {
     }
   }
 
+  /// Call API /getUserData to retrieve user data from backend server.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> getUserData(
       Map<String, dynamic>? userData) async {
     // Query user data
@@ -131,43 +146,8 @@ class ApiClient {
     }
   }
 
-  // Future<Map<String, dynamic>> logout() async {
-  //   // Query user data
-  //   final serverUrl = cacheParameter.getServerIpAddress();
-  //   final serverPort = cacheParameter.getServerPort();
-  //   // Implement user logout
-  //   try {
-  //     Response response = await _dio.get(
-  //       'http://$serverUrl:$serverPort/mobile/logout',
-  //     );
-  //     return response.data;
-  //   } on DioException catch (e) {
-  //     return e.response!.data;
-  //   }
-  // }
-
-  // Future<Map<String, dynamic>> verifyOtp(
-  //     Map<String, dynamic>? verifyOtpData, String deviceId) async {
-  //   final serverUrl = cacheParameter.getServerIpAddress();
-  //   final serverPort = cacheParameter.getServerPort();
-
-  //   try {
-  //     Response response =
-  //         await _dio.post('http://$serverUrl:$serverPort/mobile/verifyOtp',
-  //             data: verifyOtpData,
-  //             options: Options(headers: {
-  //               'content-type': 'application/json',
-  //               'Access-Control-Allow-Origin':
-  //                   'http://$serverUrl:$serverPort/mobile/verifyOtp',
-  //               'device_id': deviceId,
-  //             }));
-  //     return response.data;
-  //   } on DioException catch (e) {
-  //     // Return the error object if any
-  //     return e.response!.data;
-  //   }
-  // }
-
+  /// Call API /certSign to request mobile CSR to be signed by KMS server.
+  /// Adjust endpoint destination by changing the following IP address and port
   Future<Map<String, dynamic>> certificateSigning(
       Map<String, dynamic>? certificateRequestData) async {
     try {
@@ -185,47 +165,4 @@ class ApiClient {
       return e.response!.data;
     }
   }
-
-  // Future<Map<String, dynamic>> registerUser(
-  //     Map<String, dynamic>? userData, String deviceId) async {
-  //   // Implement user registration
-  //   final serverUrl = cacheParameter.getServerIpAddress();
-  //   final serverPort = cacheParameter.getServerPort();
-  //   try {
-  //     Response response =
-  //         await _dio.post('http://$serverUrl:$serverPort/mobile/auth/register',
-  //             data: userData,
-  //             options: Options(headers: {
-  //               'content-type': 'application/json',
-  //               'Access-Control-Allow-Origin':
-  //                   'http://$serverUrl:$serverPort/mobile/auth/register',
-  //               'device_id': deviceId,
-  //             }));
-  //     // Return the successful json object
-  //     return response.data;
-  //   } on DioException catch (e) {
-  //     // Return the error object if any
-  //     return e.response!.data;
-  //   }
-  // }
-
-  // Future<Map<String, dynamic>> login(Map<String, dynamic>? loginData) async {
-  //   // Implement user login
-  //   final serverUrl = cacheParameter.getServerIpAddress();
-  //   final serverPort = cacheParameter.getServerPort();
-  //   try {
-  //     Response response =
-  //         await _dio.post('http://$serverUrl:$serverPort/mobile/auth/login',
-  //             data: loginData,
-  //             options: Options(headers: {
-  //               'content-type': 'application/json',
-  //               'Access-Control-Allow-Origin':
-  //                   'http://$serverUrl:$serverPort/mobile/auth/login',
-  //             }));
-  //     return response.data;
-  //   } on DioException catch (e) {
-  //     // Return the error object if any
-  //     return e.response!.data;
-  //   }
-  // }
 }

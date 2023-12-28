@@ -14,7 +14,7 @@ dependencies:
     git: 
       url: ssh://karya-ssh@karya.klaviskripta.com:2121/source/KeyManageE2EEMobileSDK.git
       path: e2ee_sdk_flutter
-      
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

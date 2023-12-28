@@ -87,7 +87,7 @@ Future<EncryptedData> _aesEncrypt(
 }
 
 // NOTE: Private method
-Future<SecureRandom> _generateSecureRandom() async {
+SecureRandom _generateSecureRandom() {
   try {
     final SecureRandom secureRandom = FortunaRandom();
     final Random seedSource = Random.secure();
@@ -112,8 +112,8 @@ Future<SecureRandom> _generateSecureRandom() async {
 }
 
 // NOTE: Private method
-Future<AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>> _generateRSAKeypair(
-    SecureRandom secureRandom, int bitLength) async {
+AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeypair(
+    SecureRandom secureRandom, int bitLength) {
   try {
     final RSAKeyGenerator keyGen = RSAKeyGenerator()
       ..init(ParametersWithRandom(
@@ -143,11 +143,11 @@ Future<AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>> _generateRSAKeypair(
 // NOTE: Private method
 Future<void> _createRSAKeypairInFlutterSecureStorage(
     String keyAlias, FlutterSecureStorage secureStorage, int keySize) async {
-  final SecureRandom secureRandom = await _generateSecureRandom();
+  final SecureRandom secureRandom = _generateSecureRandom();
 
   try {
     final AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> keyPair =
-        await _generateRSAKeypair(secureRandom, keySize);
+        _generateRSAKeypair(secureRandom, keySize);
 
     final String privateKeyPem =
         CryptoUtils.encodeRSAPrivateKeyToPem(keyPair.privateKey);
@@ -296,8 +296,8 @@ Future<String?> _getPublicKeyPEM(String keyAlias) async {
 }
 
 // NOTE: Private method
-Future<Uint8List> _decryptRSA(String rsaPrivateKeyPem, Uint8List message,
-    [Uint8List? oaepLabel]) async {
+Uint8List _decryptRSA(String rsaPrivateKeyPem, Uint8List message,
+    [Uint8List? oaepLabel]) {
   try {
     final RSAPrivateKey rsaPrivateKey =
         CryptoUtils.rsaPrivateKeyFromPem(rsaPrivateKeyPem);
@@ -383,7 +383,7 @@ Future<void> _importAES256GCMKey(
       final privateKeyPem = keyPairObject!.privateKeyPem;
 
       // Unwrap the imported key
-      final clientKey = await _decryptRSA(privateKeyPem, wrappedKey);
+      final clientKey = _decryptRSA(privateKeyPem, wrappedKey);
 
       // Store client key to secure storage and overwrite the key if exist
       const FlutterSecureStorage secureStorage = FlutterSecureStorage();
@@ -608,15 +608,22 @@ class E2eeSdkInSecureStorage {
           null,
           null);
     }
+    
+    // final bool? isStrongBoxAvailable = await _isStrongBoxAvailable();
+    // if (!isStrongBoxAvailable!) {
+    //   print("Strong box not available!");
+    // } else {
+    //   print("Strong box available");
+    // }
   }
 
   Future<KMSWrappedKeyMetadata> fetchWrappedClientKey() async {
     try {
-      final Future<Uint8List> aad = E2eeSdk().generateRandomBytes(AAD_LENGTH);
-      final Future<Uint8List> iv = E2eeSdk().generateRandomBytes(GCM_IV_LENGTH);
+      final Uint8List aad = E2eeSdk().generateRandomBytes(AAD_LENGTH);
+      final Uint8List iv = E2eeSdk().generateRandomBytes(GCM_IV_LENGTH);
 
       final EncryptedData encryptedData =
-          await _aesEncrypt(CLIENT_KEY_ALIAS, await aad, await iv, null);
+          await _aesEncrypt(CLIENT_KEY_ALIAS, aad, iv, null);
 
       const FlutterSecureStorage storage = FlutterSecureStorage();
       final Future<String?> encodedKMSWrappedClientKey =
@@ -629,12 +636,12 @@ class E2eeSdkInSecureStorage {
       // Sequence: tag, iv, ciphertext length, ciphertext
       final Uint8List encryptedDataBlock = serializeListOfUint8Lists([
         encryptedData.tag,
-        await iv,
+        iv,
         encryptedDataLengthBytes,
         encryptedData.ciphertext
       ]);
 
-      return KMSWrappedKeyMetadata(await aad, base64Encode(encryptedDataBlock),
+      return KMSWrappedKeyMetadata(aad, base64Encode(encryptedDataBlock),
           (await encodedKMSWrappedClientKey)!);
     } on KKException catch (e) {
       throw KKException(e.message!, e.code, e.details, e.stacktrace);
@@ -812,13 +819,13 @@ class E2eeSdkInSecureStorage {
       final deviceId = await _getDeviceId();
       const FlutterSecureStorage storage = FlutterSecureStorage();
 
-      final Uint8List iv = await E2eeSdk().generateRandomBytes(GCM_IV_LENGTH);
+      final Uint8List iv = E2eeSdk().generateRandomBytes(GCM_IV_LENGTH);
       await _generateAES256Key(_devicePasswordKeyName, true, true);
       await storage.write(key: _devicePasswordIvName, value: hex.encode(iv));
 
       // Calculate digest of password with salt
       final String passwordWithSalt = deviceId! + hex.encode(iv);
-      final Uint8List passwordDigest = await E2eeSdk().calculateDigest(
+      final Uint8List passwordDigest = E2eeSdk().calculateDigest(
           Uint8List.fromList(utf8.encode(passwordWithSalt)), "SHA-512");
 
       final EncryptedData encryptedData = await _aesEncrypt(
@@ -853,7 +860,7 @@ class E2eeSdkInSecureStorage {
 
       // Calculate digest of password with salt
       final String passwordWithSalt = deviceId! + storedIv!;
-      final Uint8List passwordDigest = await E2eeSdk().calculateDigest(
+      final Uint8List passwordDigest = E2eeSdk().calculateDigest(
           Uint8List.fromList(utf8.encode(passwordWithSalt)), "SHA-512");
 
       final EncryptedData encryptedData = await _aesEncrypt(

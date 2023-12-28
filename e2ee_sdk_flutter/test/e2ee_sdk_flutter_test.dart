@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:e2ee_sdk_flutter/e2ee_sdk_flutter.dart';
+import 'package:e2ee_sdk_flutter/core/e2ee_sdk_in_secure_storage.dart';
 import 'package:e2ee_sdk_flutter/native_bridge/e2ee_sdk_flutter_platform_interface.dart';
 import 'package:e2ee_sdk_flutter/native_bridge/e2ee_sdk_flutter_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -20,7 +20,7 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    E2eeSdkFlutter e2eeSdkFlutterPlugin = E2eeSdkFlutter();
+    E2eeSdkInSecureStorage e2eeSdkFlutterPlugin = E2eeSdkInSecureStorage();
     MockE2eeSdkFlutterPlatform fakePlatform = MockE2eeSdkFlutterPlatform();
     E2eeSdkFlutterPlatform.instance = fakePlatform;
 
