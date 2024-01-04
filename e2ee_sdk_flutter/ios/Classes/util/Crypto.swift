@@ -28,7 +28,6 @@ class Crypto {
             }
         }
 
-        // TODO: Test with actual device to demonstrate the access control
         let flags: SecAccessControlCreateFlags
 
         if #available(iOS 11.3, *) {
@@ -118,11 +117,9 @@ class Crypto {
         requireAuth: Bool,
         allowOverwrite: Bool
     ) throws -> Void {
-        // TODO: Test with actual mobile device to demonstrate the access control
         let context = LAContext()
         context.localizedReason = "Access device based password from iOS Keychain"
         
-        // TODO: Test with actual device to demonstrate the access control
         var error: Unmanaged<CFError>?
         let access = SecAccessControlCreateWithFlags(nil,
             kSecAttrAccessibleWhenUnlockedThisDeviceOnly, .userPresence, &error)
@@ -190,11 +187,9 @@ class Crypto {
 
     @available(iOS 13.0, *)
     public func encryptAES256GCM(keyAlias: String, plainData: Data, iv: Data, aad: Data?) throws -> Data? {
-        // TODO: Test with actual device to demonstrate the access control
         let context = LAContext()
         context.localizedReason = "Access device based password from iOS Keychain"
         
-        // TODO: Test with actual device to demonstrate the access control
         var error: Unmanaged<CFError>?
         let access = SecAccessControlCreateWithFlags(nil,
             kSecAttrAccessibleWhenUnlockedThisDeviceOnly, .userPresence, &error)
@@ -260,11 +255,9 @@ class Crypto {
           wrappedKey: Data,
           allowOverwrite: Bool
         ) throws -> Void {
-            // TODO: Test with actual device to demonstrate the access control
             let context = LAContext()
             context.localizedReason = "Access device based password from iOS Keychain"
             
-            // TODO: Test with actual device to demonstrate the access control
             var error: Unmanaged<CFError>?
             let access = SecAccessControlCreateWithFlags(nil,
                 kSecAttrAccessibleWhenUnlockedThisDeviceOnly, .userPresence, &error)
@@ -307,7 +300,10 @@ class Crypto {
         }
 
     @available(iOS 13.0, *)
-    public func deleteAES256GCMkey(keyAlias: String) throws -> Void {
+    public func deleteAES256GCMKey(keyAlias: String) throws -> Void {
+        let context = LAContext()
+        context.localizedReason = "Access key from iOS Keychain"
+
         // Define retrieving query
         let retrieveQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

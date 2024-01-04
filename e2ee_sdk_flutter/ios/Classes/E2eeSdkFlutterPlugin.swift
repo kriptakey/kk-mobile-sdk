@@ -116,11 +116,11 @@ public class E2eeSdkFlutterPlugin: NSObject, FlutterPlugin {
       } else {
         result(false)
       }
-    case "deleteAES256GCMkey":
+    case "deleteAES256GCMKey":
       if let arguments = call.arguments as? Dictionary<String, Any> {
         let keyAlias = arguments["keyAlias"] as? String
         if #available(iOS 13.0, *) {
-          try? Crypto().deleteAES256GCMkey(
+          try? Crypto().deleteAES256GCMKey(
             keyAlias: keyAlias!)
         }
       }

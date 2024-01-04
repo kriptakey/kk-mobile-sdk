@@ -2,6 +2,7 @@ name: kms_e2ee_package
 description: "A flutter package that provides list of API(s) to develop E2EE based applications."
 version: 0.0.1
 homepage:
+publish_to: 'none'
 
 environment:
   sdk: '>=3.0.5 <4.0.0'

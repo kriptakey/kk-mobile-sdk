@@ -608,13 +608,6 @@ class E2eeSdkInSecureStorage {
           null,
           null);
     }
-    
-    // final bool? isStrongBoxAvailable = await _isStrongBoxAvailable();
-    // if (!isStrongBoxAvailable!) {
-    //   print("Strong box not available!");
-    // } else {
-    //   print("Strong box available");
-    // }
   }
 
   Future<KMSWrappedKeyMetadata> fetchWrappedClientKey() async {

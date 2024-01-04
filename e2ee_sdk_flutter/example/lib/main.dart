@@ -615,14 +615,12 @@ class _MyAppState extends State<MyApp> {
   //   if (!mounted) return;
   // }
 
-  Future<String> authenticateUser() async {
+  Future<void> authenticateUser() async {
     // Authenticate user
     final LocalAuthentication auth = LocalAuthentication();
     final Future<bool> canAuthenticateWithBiometrics = auth.canCheckBiometrics;
     final bool canAuthenticate =
         await canAuthenticateWithBiometrics || await auth.isDeviceSupported();
-    var deviceCsr = "";
-    var encryptedPasswordBlock = "";
 
     if (canAuthenticate) {
       try {
@@ -633,47 +631,23 @@ class _MyAppState extends State<MyApp> {
           throw "Failed to authenticate!";
         } else {
           // Generate device CSR
-          // deviceCsr = await E2eeSdkInSecureStorage().generateDeviceIdKeypair(
-          //     DistinguishedName("www.example.com", "ID", "location", "state",
-          //         "organizationName", "organizationUnit"));
-          // print("Device CSR: $deviceCsr");
+          final String deviceCsr = await E2eeSdkInSecureStorage()
+              .generateDeviceIdKeypair(DistinguishedName(
+                  "www.example.com",
+                  "ID",
+                  "location",
+                  "state",
+                  "organizationName",
+                  "organizationUnit"));
+          print("Device CSR: $deviceCsr");
 
           // Generate device based encrypted password
-          const String publicKeyPem = '''
-          -----BEGIN PUBLIC KEY-----
-          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA08717ObQ9Plw3XAR80ad
-          RMYRzEc9GxbNrbhOVHBCHRpSrgLkmX/gkjqpUj0B+mgW7Ta0qBhR+5JhFfDGoPbH
-          +XmU/utLMhCwmtEayKrVka9CapaDWu1/nVInHvrDWd2cE9JusLYQBnTY0E9FiPJb
-          YbhgUKG28dPwbeYpcFCPhMgZSkyvkWdKmR/RMcYohe9ewIxubPvcHRGmNAwcwNGN
-          yAeyWowKSd7We+CoD3SHh/CFj/+JLZ9oecOrjlG5KitpassDkSsNDYvXLP1I6xBU
-          SvAAMXmQkJ2V0LpSF0DpIaCXHxCFzDkpJ0mWWjJjeodoCWYGP/pEUMib0aPvS/Qt
-          tNrVaJdCX9qLM5MnLV39R874vuF4kzBXrfemwWgMo7aedSTPVCl2d9dUMaTGrKq7
-          dPJnRmI57A++LJPMNtyGnvfXCSZcf/hPudjiss4V+ufNqlmRilyl+RB6CEllPIb+
-          LfN/khDJQym1dT9ESJ9nqNBH05FCou+ygOYkMfmPGX7XAgMBAAE=
-          -----END PUBLIC KEY-----
-          ''';
-          const String oaepLabel = "FzDkpJ0mWWjJjeodoCWYGP/pEUMib0aPvS/Qt";
-          final ResponseE2eeEncrypt newDevicePassword =
-              await E2eeSdkInSecureStorage()
-                  .generateDeviceBasedEncryptedPassword(
-                      publicKeyPem, oaepLabel);
-          encryptedPasswordBlock = newDevicePassword.encryptedDataBlockList[0];
-          print("Encrypted user password: $encryptedPasswordBlock");
-
-          // Get device based encrypted password
-          // final ResponseE2eeEncrypt devicePassword =
-          //     await E2eeSdkInSecureStorage()
-          //         .getDeviceBasedEncryptedPassword(
-          //             publicKeyPem, oaepLabel);
-          // encryptedPasswordBlock = devicePassword.encryptedDataBlockList[0];
-          // print("Encrypted user password: $encryptedPasswordBlock");
+          // final String newDevicePassword = await E2eeSdkInSecureStorage().generateDeviceBasedEncryptedPassword(authPublicKeyPEM, oaepLabel);
         }
       } on PlatformException {
         rethrow;
       }
     }
-    return deviceCsr;
-    // return encryptedPasswordBlock;
   }
 
   @override
@@ -704,9 +678,7 @@ class _MyAppState extends State<MyApp> {
                     // initGenerateDataSignature();
                     // initImportKey();
 
-                    final String encryptedPassword = await authenticateUser();
-                    Text('Encrypted user password: $encryptedPassword');
-                    // final E2eeSdkPlatform e2eeSdkPlatform = E2eeSdkPlatform();
+                    await authenticateUser();
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.lime[900],
