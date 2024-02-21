@@ -1,0 +1,29 @@
+name: kms_e2ee_package
+description: "A flutter package that provides list of API(s) to develop E2EE based applications."
+version: 0.0.1 # Adjust with the current KK version
+homepage:
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  e2ee_sdk_flutter:
+    git: 
+      url: ssh://karya-ssh@karya.klaviskripta.com:2121/source/KeyManageE2EEMobileSDK.git # Replace this with actual github repo
+      path: e2ee_sdk_flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:

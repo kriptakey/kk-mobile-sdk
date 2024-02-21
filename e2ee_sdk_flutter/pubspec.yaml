@@ -1,0 +1,48 @@
+name: e2ee_sdk_flutter
+description: "This is the implementation of E2EE mobile SDK."
+version: 0.0.1 # Adjust with the current KK version
+homepage:
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  kms_e2ee_package:
+    git: 
+      url: ssh://karya-ssh@karya.klaviskripta.com:2121/source/KeyManageE2EEMobileSDK.git # Replace this with actual github repo
+      path: kms_e2ee_package
+
+  plugin_platform_interface: ^2.0.2
+  basic_utils: ^5.6.1
+  convert: ^3.1.1
+  cryptography: ^2.5.0
+  device_info_plus: ^9.0.3
+  flutter_secure_storage: ^9.0.0
+  pointycastle: ^3.7.3
+  tuple: ^2.0.2
+  test: ^1.24.0
+  dio: ^5.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.klaviskripta.e2ee_sdk_flutter
+        pluginClass: E2eeSdkFlutterPlugin
+      ios:
+        pluginClass: E2eeSdkFlutterPlugin
+
