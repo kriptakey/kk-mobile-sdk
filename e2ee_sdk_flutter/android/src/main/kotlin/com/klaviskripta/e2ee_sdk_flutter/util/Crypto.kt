@@ -4,29 +4,37 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.security.keystore.WrappedKeyEntry
+import android.security.keystore.KeyProtection
 import androidx.annotation.RequiresApi
 import java.io.StringWriter
 import java.security.Key
 import java.security.KeyPairGenerator
 import java.security.KeyStore
+import java.security.KeyStore.SecretKeyEntry
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.Signature
 import java.security.spec.ECGenParameterSpec
 import java.security.spec.RSAKeyGenParameterSpec
+import javax.crypto.spec.SecretKeySpec
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.OAEPParameterSpec
 import javax.crypto.spec.PSource
 import javax.security.auth.x500.X500Principal
+import javax.crypto.SecretKey
 import org.bouncycastle.asn1.*
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder
 import org.bouncycastle.util.io.pem.PemObject
 import org.bouncycastle.util.io.pem.PemWriter
+import org.bouncycastle.asn1.util.ASN1Dump
 import java.security.spec.MGF1ParameterSpec
+
+import android.security.keystore.SecureKeyImportUnavailableException;
+import java.security.KeyStoreException;
 
 class Crypto {
     @RequiresApi(Build.VERSION_CODES.P)
@@ -436,22 +444,24 @@ class Crypto {
 
     @RequiresApi(Build.VERSION_CODES.P)
     public fun decryptRSA(
-            keyAlias: String,
-            cipherData: ByteArray,
-            oaepLabel: ByteArray?
+        keyAlias: String,
+        cipherData: ByteArray,
+        oaepLabel: ByteArray?
     ): ByteArray {
         try {
             val privateKey: Key? = getKey(keyAlias)
             val cipher = Cipher.getInstance(Constants.RSA_CIPHER_MODE)
             cipher.init(
-                    Cipher.DECRYPT_MODE,
-                    privateKey,
-                    OAEPParameterSpec(
-                            Constants.RSA_OAEP_HASH_PARAMETER_SPEC,
-                            Constants.RSA_OAEP_MGF1_PARAMETER_SPEC,
-                            MGF1ParameterSpec.SHA1,
-                            if (oaepLabel == null) PSource.PSpecified.DEFAULT else PSource.PSpecified(oaepLabel)
+                Cipher.DECRYPT_MODE,
+                privateKey,
+                OAEPParameterSpec(
+                    Constants.RSA_OAEP_HASH_PARAMETER_SPEC,
+                    Constants.RSA_OAEP_MGF1_PARAMETER_SPEC,
+                    MGF1ParameterSpec.SHA1,
+                    if (oaepLabel == null) PSource.PSpecified.DEFAULT else PSource.PSpecified(
+                        oaepLabel
                     )
+                )
             )
             return cipher.doFinal(cipherData)
         } catch (ex: Exception) {
@@ -517,8 +527,59 @@ class Crypto {
                     paramSpec
                 )
             keyStore.setEntry(importedKeyAlias, wrappingKeyEntry, null)
+        } catch (ex: SecureKeyImportUnavailableException) {
+            return importSecretKeyEntry(
+                wrappedKey,
+                wrappingKeyAlias,
+                importedKeyAlias,
+                allowOverwrite
+            )
+        } catch (ex: KeyStoreException) {
+            return importSecretKeyEntry(
+                wrappedKey,
+                wrappingKeyAlias,
+                importedKeyAlias,
+                allowOverwrite
+            )
         } catch (ex: Exception) {
             ex.printStackTrace()
+            throw ex
+        }
+    }
+
+    // @RequiresApi(Build.VERSION_CODES.P)
+    private fun importSecretKeyEntry(
+        wrappedKey: ByteArray,
+        wrappingKeyAlias: String,
+        importedKeyAlias: String,
+        allowOverwrite: Boolean
+    ) {
+        val isStrongBoxAvailable = (StrongboxInspector().isStrongBoxAvailable() ?: false)
+        try {
+            val keyStore = KeyStore.getInstance(Constants.ANDROID_KEY_STORE)
+            keyStore.load(null)
+            if (!allowOverwrite and keyStore.isKeyEntry(importedKeyAlias))
+                throw KMSException("Key alias already exist!")
+
+            // Decrypt wrappedKey with RSA private key
+            var unwrappedKey: ByteArray? = decryptRSA(wrappingKeyAlias, wrappedKey, null)
+
+            // Import SecretKeyEntry
+            val secretKey: SecretKey =
+                SecretKeySpec(unwrappedKey!!, 0, unwrappedKey.size, Constants.AES_ALGO_STRING)
+            val secretKeyEntry: SecretKeyEntry = SecretKeyEntry(secretKey)
+            val secretKeyProtection: KeyProtection =
+                KeyProtection.Builder(KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .setIsStrongBoxBacked(isStrongBoxAvailable)
+                    .build()
+            keyStore.setEntry(importedKeyAlias, secretKeyEntry, secretKeyProtection)
+
+            // Clear the key from memory
+            for (i in 0..(unwrappedKey.size - 1))
+                unwrappedKey[i] = 0
+        } catch (ex: Exception) {
             throw ex
         }
     }

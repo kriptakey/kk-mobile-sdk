@@ -16,6 +16,7 @@ class ErrorCode {
         // Secure environment or strong box
         const val SECURE_ENVIRONMENT_UNAVAILABLE: Int = 3000000
         const val STRONG_BOX_UNAVAILABLE: Int = 3000001
+        const val SECURE_KEY_IMPORT_UNAVAILABLE: Int = 3000002
 
         // Key availability
         const val KEY_NOT_FOUND: Int = 5000001

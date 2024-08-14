@@ -589,6 +589,22 @@ Future<bool?> _isSecureEnvironmentAvailable() async {
   }
 }
 
+// NOTE: Private method
+Future<bool?> _isSecureKeyImportAvailable() async {
+  try {
+    return E2eeSdkFlutterPlatform.instance.isSecureKeyImportAvailable();
+  } on PlatformException catch (e) {
+    throw KKException(
+        "Error: Check secure key import availability failed.\r\nStack trace: ${e.stacktrace}",
+        ErrorCode.SECURE_KEY_IMPORT_UNAVAILABLE,
+        e.details,
+        e.stacktrace);
+  } catch (e, s) {
+    throw KKException("Error: ${e.toString()}.\r\nStack trace: ${s.toString()}",
+        ErrorCode.ERROR_IN_FUNCTION_IS_SECURE_KEY_IMPORT_AVAILABLE, null, null);
+  }
+}
+
 class E2eeSdkInSecureStorage {
   static const String _deviceIdKeypairName = "DeviceIdKeypair";
   static const String _devicePasswordKeyName = "DevicePasswordKey";
@@ -986,5 +1002,9 @@ class E2eeSdkInSecureStorage {
           null,
           null);
     }
+  }
+
+  Future<bool?> isSecureKeyImportAvailable() async {
+    return _isSecureKeyImportAvailable();
   }
 }

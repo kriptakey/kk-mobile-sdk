@@ -11,6 +11,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 import com.klaviskripta.e2ee_sdk_flutter.util.Crypto
 import com.klaviskripta.e2ee_sdk_flutter.util.StrongboxInspector
+import com.klaviskripta.e2ee_sdk_flutter.util.SecureKeyImportInspector
 import com.klaviskripta.e2ee_sdk_flutter.util.ErrorCode
 
 /** E2eeSdkFlutterPlugin */
@@ -48,6 +49,16 @@ class E2eeSdkFlutterPlugin : FlutterPlugin, MethodCallHandler {
                 result.error(
                     ErrorCode.STRONG_BOX_UNAVAILABLE.toString(),
                     "Failed to get strongbox availability",
+                    null
+                )
+            }
+        } else if (call.method == "isSecureKeyImportAvailable") {
+            try {
+                result.success(SecureKeyImportInspector().isSecureKeyImportAvailable())
+            } catch (ex: Exception) {
+                result.error(
+                    ErrorCode.SECURE_KEY_IMPORT_UNAVAILABLE.toString(),
+                    "Failed to get secure key import availability",
                     null
                 )
             }

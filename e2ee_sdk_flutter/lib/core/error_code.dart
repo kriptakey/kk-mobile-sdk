@@ -38,6 +38,7 @@ class ErrorCode {
   /// Strong Box or Secure Enclave
   static const String SECURE_ENVIRONMENT_UNAVAILABLE = "3000000";
   static const String STRONG_BOX_UNAVAILABLE = "3000001";
+  static const String SECURE_KEY_IMPORT_UNAVAILABLE = "3000002";
 
   /// Platform
   static const String PLATFORM_NOT_SUPPORTED = "4000000";
@@ -114,4 +115,6 @@ class ErrorCode {
   static const String ERROR_IN_FUNCTION_GET_PUBLIC_KEY_PEM = "8000041";
   static const String ERROR_IN_FUNCTION_IS_SECURE_ENVIRONMENT_AVAILABLE =
       "8000042";
+  static const String ERROR_IN_FUNCTION_IS_SECURE_KEY_IMPORT_AVAILABLE =
+      "8000043";
 }

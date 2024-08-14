@@ -1,0 +1,39 @@
+name: e2ee_device_binding_demo_flutter
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  kms_e2ee_package:
+    path: /home/sriyulianti/Development/KriptaKeyMain/serversdk/e2ee/kms_e2ee_package
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
+  go_router: ^7.0.0
+  dio: ^5.2.1
+  local_auth: ^2.1.7
+  path_provider: ^2.1.1
+  image_picker: ^1.0.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/app_server_cert.pem
+

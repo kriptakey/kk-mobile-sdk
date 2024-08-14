@@ -22,6 +22,11 @@ class MethodChannelE2eeSdkFlutter extends E2eeSdkFlutterPlatform {
   }
 
   @override
+  Future<bool?> isSecureKeyImportAvailable() {
+    return methodChannel.invokeMethod<bool>('isSecureKeyImportAvailable');
+  }
+
+  @override
   Future<String?> generateApplicationCSR(
       String keyAlias, DistinguishedName distinguishedName) {
     return methodChannel
@@ -136,8 +141,10 @@ class MethodChannelE2eeSdkFlutter extends E2eeSdkFlutterPlatform {
   }
 
   @override
-  Future<Uint8List?> generateDigestSignature(String keyAlias, Uint8List digest) {
-    return methodChannel.invokeMethod<Uint8List>('signDigest', <String, dynamic>{
+  Future<Uint8List?> generateDigestSignature(
+      String keyAlias, Uint8List digest) {
+    return methodChannel
+        .invokeMethod<Uint8List>('signDigest', <String, dynamic>{
       'keyAlias': keyAlias,
       'digest': digest,
     });
@@ -145,15 +152,13 @@ class MethodChannelE2eeSdkFlutter extends E2eeSdkFlutterPlatform {
 
   @override
   Future<void> deleteAES256GCMKey(String keyAlias) {
-    return methodChannel.invokeMethod<void>('deleteAES256GCMKey', <String, dynamic>{
-      'keyAlias': keyAlias
-    });
+    return methodChannel.invokeMethod<void>(
+        'deleteAES256GCMKey', <String, dynamic>{'keyAlias': keyAlias});
   }
 
   @override
   Future<void> deleteKeyPair(String keyAlias) {
-    return methodChannel.invokeMethod<void>('deleteKeyPair', <String, dynamic>{
-      'keyAlias': keyAlias
-    });
+    return methodChannel.invokeMethod<void>(
+        'deleteKeyPair', <String, dynamic>{'keyAlias': keyAlias});
   }
 }

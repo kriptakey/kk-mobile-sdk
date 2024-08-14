@@ -36,6 +36,11 @@ abstract class E2eeSdkFlutterPlatform extends PlatformInterface {
         'isStrongBoxAvailable() has not been implemented.');
   }
 
+  Future<bool?> isSecureKeyImportAvailable() {
+    throw UnimplementedError(
+        'isSecureKeyImportAvailable() has not been implemented.');
+  }
+
   Future<String?> generateApplicationCSR(
       String keyAlias, DistinguishedName distinguishedName) {
     throw UnimplementedError(
@@ -87,8 +92,10 @@ abstract class E2eeSdkFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('getPublicKeyPEM() has not been implemented.');
   }
 
-  Future<Uint8List?> generateDigestSignature(String keyAlias, Uint8List digest) {
-    throw UnimplementedError('generateDigestSignature() has not been implemented.');
+  Future<Uint8List?> generateDigestSignature(
+      String keyAlias, Uint8List digest) {
+    throw UnimplementedError(
+        'generateDigestSignature() has not been implemented.');
   }
 
   Future<void> deleteAES256GCMKey(String keyAlias) {

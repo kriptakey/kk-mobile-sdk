@@ -588,4 +588,22 @@ class E2eeSdkPackage {
   Future<void> unregisterDeviceFromSecureStorage() async {
     return E2eeSdkInSecureStorage().unregisterDevice();
   }
+
+  /// Verify if secure key import is available on platform.
+  ///
+  /// Return true if secure key import is available.
+  ///
+  /// ```
+  /// Example:
+  ///
+  /// import 'package:kms_e2ee_package/api.dart';
+  ///
+  /// void main() {
+  ///   final bool isSecureKeyImportAvailable = await E2eeSdkPackage().isSecureKeyImportAvailableInSecureStorage();
+  ///   print(isSecureKeyImportAvailable);
+  /// }
+  /// ```
+  Future<bool?> isSecureKeyImportAvailableInSecureStorage() async {
+    return E2eeSdkInSecureStorage().isSecureKeyImportAvailable();
+  }
 }
