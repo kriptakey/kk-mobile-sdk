@@ -85,21 +85,12 @@ class _PasswordlessLoginScreenState extends State<PasswordlessLoginScreen> {
   }
 
   Future<void> authenticateDeviceAndUserToServer(
-      ResponseE2eeEncrypt deviceBasedEncryptedPassword,
-      String serverPublicKey,
-      String e2eeSessionId,
-      String nonce,
-      String nonceSignature) async {
+      String nonce, String nonceSignature) async {
     // Send encrypted password and metadata to app server
     Map<String, dynamic> deviceAuthenticationData = {
       "name": _controllerUsername.text,
-      "encryptedPasswordBlock":
-          deviceBasedEncryptedPassword.encryptedDataBlockList[0],
-      "publicKey": serverPublicKey,
-      "e2eeSessionId": e2eeSessionId,
       "nonce": nonce,
       "nonceSignature": nonceSignature,
-      "metaData": deviceBasedEncryptedPassword.metadata
     };
     dynamic deviceActivationResponse =
         await _apiClient.authenticateUserAndDevice(deviceAuthenticationData);
@@ -113,9 +104,7 @@ class _PasswordlessLoginScreenState extends State<PasswordlessLoginScreen> {
     }
   }
 
-  Future<void> authenticateUserAndDevice() async {
-    // Request server public key
-    dynamic response = await _apiClient.preAuthentication();
+  Future<void> authenticateUserAndDevice() async { // Generate nonce and sign by device keypair
     // Authenticate user
     final LocalAuthentication localAuthentication = LocalAuthentication();
     final bool canAuthenticateWithBiometrics =
@@ -133,18 +122,6 @@ class _PasswordlessLoginScreenState extends State<PasswordlessLoginScreen> {
             localizedReason: _authenticationMessage,
             options: const AuthenticationOptions(stickyAuth: true));
         if (didAuthenticate) {
-          // Generate device based encrypted password, default passwordKey is true
-          // if the user activate the device for the first time
-          ResponseE2eeEncrypt? deviceBasedEncryptedPassword;
-          try {
-            deviceBasedEncryptedPassword = await E2eeSdkPackage()
-                .getDeviceBasedEncryptedPasswordFromSecureStorage(
-                    response['publicKey'], response['oaepLabel']);
-          } on KKException catch (e) {
-            print("Error: ${e.message}, error code: ${e.code}");
-            rethrow;
-          }
-
           // Generate 10 bytes random
           String? nonce;
           try {
@@ -165,26 +142,12 @@ class _PasswordlessLoginScreenState extends State<PasswordlessLoginScreen> {
 
           // Activate device to application server
           await authenticateDeviceAndUserToServer(
-              deviceBasedEncryptedPassword,
-              response['publicKey'],
-              response['e2eeSessionId'],
-              nonce,
-              base64Encode(nonceSignature));
+              nonce, base64Encode(nonceSignature));
         }
       } on PlatformException catch (e) {
         getAlert('Error - ${e.message}');
       }
     } else if (Platform.isIOS) {
-      ResponseE2eeEncrypt? deviceBasedEncryptedPassword;
-      try {
-        deviceBasedEncryptedPassword = await E2eeSdkPackage()
-            .getDeviceBasedEncryptedPasswordFromSecureStorage(
-                response['publicKey'], response['oaepLabel']);
-      } on KKException catch (e) {
-        print("Error: ${e.message}, error code: ${e.code}");
-        rethrow;
-      }
-
       // Generate 10 bytes random
       String? nonce;
       try {
@@ -205,16 +168,13 @@ class _PasswordlessLoginScreenState extends State<PasswordlessLoginScreen> {
 
       // Activate device to application server
       await authenticateDeviceAndUserToServer(
-          deviceBasedEncryptedPassword,
-          response['publicKey'],
-          response['e2eeSessionId'],
           nonce,
           base64Encode(nonceSignature));
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // UI for passwordless authentication
     return Scaffold(
       backgroundColor: Colors.deepPurple[100],
       body: Form(
@@ -271,7 +231,7 @@ class _PasswordlessLoginScreenState extends State<PasswordlessLoginScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      await authenticateUserAndDevice();
+                      await authenticateUserAndDevice(); // Function for passwordless authentication
                     },
                     child: const Text(
                       "Login",

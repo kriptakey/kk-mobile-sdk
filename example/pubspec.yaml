@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   kms_e2ee_package:
-    path: /home/sriyulianti/Development/KriptaKeyMain/serversdk/e2ee/kms_e2ee_package
+    path: /Users/sriyulianti/Documents/ios-project/e2ee_sdk_for_mobile_24.1-With-DigitalCert-Authentication/sdk-flutter/kms_e2ee_package
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding.git
@@ -23,6 +23,7 @@ dependencies:
   local_auth: ^2.1.7
   path_provider: ^2.1.1
   image_picker: ^1.0.4
+  win32: ^5.2.0
 
 dev_dependencies:
   flutter_test:

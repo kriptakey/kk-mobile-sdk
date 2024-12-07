@@ -103,7 +103,7 @@ class Util {
     final ApiClient apiClient = ApiClient();
     Map<String, dynamic> payload = {
       "wrappingMethod": wrappingMethod,
-      "externalPublicKey": clientKeyWrapper
+      "appstoredPublicKey": clientKeyWrapper
     };
 
     // Register user to server

@@ -9,7 +9,7 @@ import 'package:e2ee_device_binding_demo_flutter/main.dart';
 import 'package:e2ee_device_binding_demo_flutter/core/api_client.dart';
 import 'package:e2ee_device_binding_demo_flutter/util/cache_parameters.dart';
 import 'package:e2ee_device_binding_demo_flutter/util/util.dart';
-import 'package:e2ee_device_binding_demo_flutter/screens/device_activation.dart';
+import 'package:e2ee_device_binding_demo_flutter/screens/device_registration.dart';
 import 'package:e2ee_device_binding_demo_flutter/screens/show_account.dart';
 
 import 'package:kms_e2ee_package/api.dart';
@@ -28,7 +28,7 @@ class _AccountScreenState extends State<AccountScreen> {
   final ApiClient apiClient = ApiClient();
   final LocalAuthentication _auth = LocalAuthentication();
   final String _authenticationMessage = "Please authenticate yourself";
-  final Util util = Util();
+  final Util _util = Util();
 
   Future<void> logout() async {
     dynamic res = await apiClient.logout();
@@ -95,8 +95,7 @@ class _AccountScreenState extends State<AccountScreen> {
     ));
   }
 
-  void switchToDeviceActivationScreen(String message, String e2eeSessionId,
-      String publicKey, String oaepLabel) {
+  void switchToDeviceRegistrationScreen(String message) {
     if (!context.mounted) return;
     // Notify user that session has been created
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -109,10 +108,7 @@ class _AccountScreenState extends State<AccountScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DeviceActivationScreen(
-                      e2eeSessionId: e2eeSessionId,
-                      publicKey: publicKey,
-                      oaepLabel: oaepLabel)));
+                  builder: (context) => DeviceRegistrationScreen()));
         },
       ),
       backgroundColor: Colors.deepPurple,
@@ -165,95 +161,6 @@ class _AccountScreenState extends State<AccountScreen> {
             ],
           );
         });
-  }
-
-  Future<void> startDeviceRegistration() async {
-    // Do pre-authentication
-    dynamic response = await apiClient.preAuthentication();
-
-    // Authenticate user
-    final bool canAuthenticateWithBiometrics = await _auth.canCheckBiometrics;
-    final bool canAuthenticate =
-        canAuthenticateWithBiometrics || await _auth.isDeviceSupported();
-
-    if (canAuthenticate) {
-      try {
-        final bool didAuthenticate = await _auth.authenticate(
-            localizedReason: _authenticationMessage,
-            options: const AuthenticationOptions(stickyAuth: true));
-        if (didAuthenticate) {
-          // CertificateInformation: CN (Common Name), C (Country), L (Location), ST (State), O (Organization), OU (Organizational Unit)
-          final DistinguishedName distinguishedName = DistinguishedName(
-              "www.example.com",
-              "ID",
-              "Jakarta",
-              "South Jakarta",
-              "Hibank",
-              "Core Banking");
-
-          // 1. Call API generate key pair in secure storage and return CSR
-          String? applicationCsr;
-          try {
-            applicationCsr = await E2eeSdkPackage()
-                .generateDeviceIdKeypairInSecureStorage(distinguishedName);
-          } on KKException catch (e) {
-            print("Error: ${e.message}, error code: ${e.code}");
-            rethrow;
-          }
-
-          print(applicationCsr);
-          /////////////////////////////////////////////////////////////////
-
-          // Send request to app server to sign the CSR
-          Map<String, dynamic> certificateRequestData = {
-            "csr": applicationCsr,
-            "e2eeSessionId": response['e2eeSessionId']
-          };
-
-          dynamic certificateSigningResponse =
-              await apiClient.certificateSigning(certificateRequestData);
-          if (certificateSigningResponse['message'] !=
-              "Certificate generated successfully!") {
-            final String errorMessage = certificateSigningResponse['message'];
-            getAlert("Alert: $errorMessage");
-          } else {
-            // Verify certificate signature. If valid, store the certificate
-            final String mobileCertificate =
-                certificateSigningResponse['certificate'];
-
-            final String pinnedCertificatePem =
-                await DefaultAssetBundle.of(context)
-                    .loadString("assets/app_server_cert.pem");
-
-            // 2. Call API verify certificate chain and return true if verified
-            try {
-              if ((await E2eeSdkPackage()
-                      .verifyCertificateSignature(mobileCertificate)) &&
-                  (await E2eeSdkPackage()
-                      .verifyCertificateSignature(pinnedCertificatePem))) {
-                // Store device certificate if verified
-                final File file = await util.writeDataToFile(mobileCertificate);
-
-                // Switch to device activation screen
-                switchToDeviceActivationScreen(
-                    "Notification: your device has been registered successfully!",
-                    response['e2eeSessionId'],
-                    response['publicKey'],
-                    response['oaepLabel']);
-              } else {
-                getAlert("Alert: Invalid certificate!");
-              }
-            } on KKException catch (e) {
-              print("Error: ${e.message}, error code: ${e.code}");
-              rethrow;
-            }
-            //////////////////////////////////////////////////////////////////
-          }
-        }
-      } on PlatformException catch (e) {
-        getAlert('Error - ${e.message}');
-      }
-    }
   }
 
   Future<void> showAccount() async {
@@ -338,7 +245,7 @@ class _AccountScreenState extends State<AccountScreen> {
     // Meanwhile, the iOS authentication prompt has been covered by the SDK itself.
     // NOTE: iOS based SDK authentication does not work in simulator.
     // You need to test iOS use case in actual device.
-    if (canAuthenticate && Platform.isAndroid) {
+    if (canAuthenticate) {
       try {
         final bool didAuthenticate = await _auth.authenticate(
             localizedReason: _authenticationMessage,
@@ -351,8 +258,6 @@ class _AccountScreenState extends State<AccountScreen> {
       } on PlatformException catch (e) {
         getAlert('Error - ${e.message}');
       }
-    } else if (Platform.isIOS) {
-      await showAccount();
     }
   }
 
@@ -411,7 +316,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // UI for user account
     return Scaffold(
       backgroundColor: Colors.deepPurple[100],
       body: Form(
@@ -441,10 +346,11 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                     onPressed: () async {
                       if (isDeviceBinding) {
-                        await showDeviceBindingConfirmation();
+                        await showDeviceBindingConfirmation(); // Only for confirmation
                       } else {
                         // Start device registration
-                        await startDeviceRegistration();
+                        switchToDeviceRegistrationScreen( // Invoke device registration page
+                            "Notification: Register your device!");
                       }
                     },
                     child: const Text(

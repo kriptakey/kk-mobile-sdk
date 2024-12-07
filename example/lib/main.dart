@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // UI for Login/Main screen
     return Scaffold(
       backgroundColor: Colors.deepPurple[100],
       body: Form(
@@ -258,7 +258,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _controllerUsername.text,
                                 _controllerPassword.text);
                             if (loginResponse == "User authenticated!") {
-                              switchToAccountScreen(loginResponse);
+                              switchToAccountScreen(loginResponse); // Password-based authentication / Login
                             } else {
                               getAlert(loginResponse);
                             }
@@ -367,6 +367,7 @@ class _FormAppState extends State<FormApp> {
         }
 
         // Check whether the app is bound to the device or not
+        // Line 371 - 426 is for Data Protection use case
         bool? isDeviceBinding;
         try {
           isDeviceBinding =
@@ -390,9 +391,11 @@ class _FormAppState extends State<FormApp> {
           }
 
           // Get secure key import availability information
-          final isSecureKeyImportAvailable = await E2eeSdkPackage()
-              .isSecureKeyImportAvailableInSecureStorage();
-          print("Secure key import information: $isSecureKeyImportAvailable");
+          if (Platform.isAndroid) {
+            final isSecureKeyImportAvailable = await E2eeSdkPackage()
+                .isSecureKeyImportAvailableInSecureStorage();
+            print("Secure key import information: $isSecureKeyImportAvailable"); // For debugging
+          }
 
           // Get wrapped client key from server
           // NOTE: Only applicable for Android API level >= 28, or starting from Android 9

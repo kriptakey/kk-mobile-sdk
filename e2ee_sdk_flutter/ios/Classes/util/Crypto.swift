@@ -32,7 +32,7 @@ class Crypto {
 
         if #available(iOS 11.3, *) {
             if (requireAuth) {
-                flags = [.userPresence]
+                flags = [.privateKeyUsage, .userPresence]
             } else {
                 flags = [.privateKeyUsage]
             }
