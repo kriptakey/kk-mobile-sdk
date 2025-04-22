@@ -1007,4 +1007,47 @@ class E2eeSdkInSecureStorage {
   Future<bool?> isSecureKeyImportAvailable() async {
     return _isSecureKeyImportAvailable();
   }
+
+  Future<void> storeSecret(String key, String value) async {
+    try {
+      const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+      await secureStorage.write(key: key, value: value);
+    } on PlatformException catch (e) {
+      throw KKException(
+          "Error: Store secret in secure storage failed.\r\nStack trace: ${e.stacktrace}",
+          ErrorCode.STORE_SECRET_FAILED,
+          e.details,
+          e.stacktrace);
+    } catch (e, s) {
+      throw KKException(
+          "Error: ${e.toString()}.\r\nStack trace: ${s.toString()}",
+          ErrorCode.ERROR_IN_FUNCTION_STORE_SECRET,
+          null,
+          null);
+    }
+  }
+
+  Future<String?> getSecret(String key) async {
+    try {
+      const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+      final String? secret = await secureStorage.read(key: key);
+      if (secret != null) {
+        return secret;
+      } else {
+        return null;
+      }
+    } on PlatformException catch (e) {
+      throw KKException(
+          "Error: Stored secret not found.\r\nStack trace: ${e.stacktrace}",
+          ErrorCode.GET_SECRET_FAILED,
+          e.details,
+          e.stacktrace);
+    } catch (e, s) {
+      throw KKException(
+          "Error: ${e.toString()}.\r\nStack trace: ${s.toString()}",
+          ErrorCode.ERROR_IN_FUNCTION_GET_SECRET,
+          null,
+          null);
+    }
+  }
 }

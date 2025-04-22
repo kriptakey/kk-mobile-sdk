@@ -606,4 +606,33 @@ class E2eeSdkPackage {
   Future<bool?> isSecureKeyImportAvailableInSecureStorage() async {
     return E2eeSdkInSecureStorage().isSecureKeyImportAvailable();
   }
+
+  /// Store a secret or data in secure storage
+  ///
+  /// ```
+  /// Example:
+  /// import 'package:kms_e2ee_package/api.dart';
+  ///
+  /// void main() {
+  ///   await E2eeSdkPackage().storeSecretInSecureStorage("username", "John");
+  /// }
+  /// ```
+  Future<void> storeSecretInSecureStorage(String key, String value) async {
+    return E2eeSdkInSecureStorage().storeSecret(key, value);
+  }
+
+  /// Get a secret or data from secure storage
+  ///
+  /// ```
+  /// Example:
+  /// import 'package:kms_e2ee_package/api.dart';
+  ///
+  /// void main() {
+  ///   final String secret = await E2eeSdkPackage().getSecretFromSecureStorage("username");
+  ///   print(secret);
+  /// }
+  /// ```
+  Future<String?> getSecretFromSecureStorage(String key) async {
+    return E2eeSdkInSecureStorage().getSecret(key);
+  }
 }

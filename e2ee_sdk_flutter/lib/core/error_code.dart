@@ -44,6 +44,8 @@ class ErrorCode {
   static const String PLATFORM_NOT_SUPPORTED = "4000000";
   static const String SET_DEVICE_BINDING_FLAG_FAILED = "4000001";
   static const String GET_DEVICE_BINDING_FLAG_FAILED = "4000002";
+  static const String STORE_SECRET_FAILED = "4000003";
+  static const String GET_SECRET_FAILED = "4000004";
 
   /// Key availability
   static const String FETCH_WRAPPED_CLIENT_KEY_FAILED = "5000000";
@@ -117,4 +119,6 @@ class ErrorCode {
       "8000042";
   static const String ERROR_IN_FUNCTION_IS_SECURE_KEY_IMPORT_AVAILABLE =
       "8000043";
+  static const String ERROR_IN_FUNCTION_STORE_SECRET = "8000044";
+  static const String ERROR_IN_FUNCTION_GET_SECRET = "8000045";
 }
