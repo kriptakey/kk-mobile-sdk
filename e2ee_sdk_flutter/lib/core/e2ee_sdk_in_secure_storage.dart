@@ -987,6 +987,12 @@ class E2eeSdkInSecureStorage {
 
       // Remove device id key pair
       await E2eeSdkFlutterPlatform.instance.deleteKeyPair(_deviceIdKeypairName);
+
+      // Remove username
+      final username = await secureStorage.read(key: USERNAME);
+      if (deviceBindingFlag != null) {
+        await secureStorage.delete(key: USERNAME);
+      }
     } on KKException catch (e) {
       throw KKException(e.message!, e.code, e.details, e.stacktrace);
     } on PlatformException catch (e) {
